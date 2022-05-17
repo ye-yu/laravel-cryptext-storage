@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -34,7 +35,7 @@ class AuthController extends Controller
      */
     function login (LoginRequest $request) {
     $loginAttributes = $request->validateAndParse();
-    error_log("Login:" . $request . implode(", ", $loginAttributes));
+    Log::info("Login:" . $request . implode(", ", $loginAttributes));
 
     if (!Auth::attempt($request->only('email', 'password'), true)) {
         throw ValidationException::withMessages([

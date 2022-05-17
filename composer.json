@@ -11,6 +11,7 @@
         "laravel/framework": "^9.11",
         "laravel/sanctum": "^2.14.1",
         "laravel/tinker": "^2.7",
+        "miladrahimi/phpcrypt": "5.*",
         "php-open-source-saver/jwt-auth": "^1.4"
     },
     "require-dev": {

@@ -23,6 +23,14 @@ return new class extends Migration
             $table->string('slot5')->nullable();
             $table->string('slot6')->nullable();
             $table->string('slot7')->nullable();
+            $table->string('key0')->nullable();
+            $table->string('key1')->nullable();
+            $table->string('key2')->nullable();
+            $table->string('key3')->nullable();
+            $table->string('key4')->nullable();
+            $table->string('key5')->nullable();
+            $table->string('key6')->nullable();
+            $table->string('key7')->nullable();
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });

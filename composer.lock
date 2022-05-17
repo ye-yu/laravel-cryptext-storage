@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "da57084802776a12a036b02f126c6d11",
+    "content-hash": "2485e3cfea0c53dca96898596e15e535",
     "packages": [
         {
             "name": "brick/math",
@@ -1734,6 +1734,68 @@
                 }
             ],
             "time": "2022-04-17T13:12:02+00:00"
+        },
+        {
+            "name": "miladrahimi/phpcrypt",
+            "version": "v5.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/miladrahimi/phpcrypt.git",
+                "reference": "036ea0a43c9948142b46a7dfd1e807c90e1186dc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/miladrahimi/phpcrypt/zipball/036ea0a43c9948142b46a7dfd1e807c90e1186dc",
+                "reference": "036ea0a43c9948142b46a7dfd1e807c90e1186dc",
+                "shasum": ""
+            },
+            "require": {
+                "ext-openssl": "*",
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "7.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "MiladRahimi\\PhpCrypt\\": "src/",
+                    "MiladRahimi\\PhpCrypt\\Tests\\": "tests/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Milad Rahimi",
+                    "email": "info@miladrahimi.com",
+                    "homepage": "http://miladrahimi.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Encryption, decryption, and hashing tools for PHP projects",
+            "homepage": "https://github.com/miladrahimi/phpcrypt",
+            "keywords": [
+                "aes",
+                "asymmetric",
+                "crypt",
+                "cryptography",
+                "decrypt",
+                "encrypt",
+                "hash",
+                "openssl",
+                "password",
+                "rsa",
+                "symmetric"
+            ],
+            "support": {
+                "email": "info@miladrahimi.com",
+                "issues": "https://github.com/miladrahimi/phpcrypt/issues",
+                "source": "https://github.com/miladrahimi/phpcrypt/issues"
+            },
+            "time": "2020-10-17T12:53:05+00:00"
         },
         {
             "name": "monolog/monolog",

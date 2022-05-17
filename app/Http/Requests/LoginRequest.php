@@ -13,7 +13,8 @@ class LoginRequest extends FormRequest {
     protected ?string $password;
 
 
-    #[ArrayShape(['email' => "string", 'name' => "string", 'password' => "string"])] public function validateAndParse(): array
+    #[ArrayShape(['email' => "string", 'name' => "string", 'password' => "string"])]
+    public function validateAndParse(): array
     {
         $val = $this->validate($this->rules());
 
