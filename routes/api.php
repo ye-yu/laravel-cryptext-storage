@@ -1,12 +1,9 @@
 <?php
 
-use App\Http\Requests\LoginRequest;
-use App\Http\Requests\RegisterRequest;
-use App\Models\User;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\JWTAuthController;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Validation\ValidationException;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,49 +16,25 @@ use Illuminate\Validation\ValidationException;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::prefix('/v1')->group(function() {
-    Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
-        return $request->user();
+
+    // public API
+    Route::get('/csrf', fn() => csrf_token());
+    Route::post('/csrf', fn(Request $request) => response()->json([
+        'status' => 'ok'
+    ]));
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+
+    // routes using cookie session
+    Route::middleware(['auth:sanctum'])->group(function () {
+        Route::get('/user', fn(Request $request) => $request->user());
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::post('/jwt', [JWTAuthController::class, 'generateToken']);
     });
 
-    Route::post('/register', function (RegisterRequest $request) {
-        $createAttributes = $request->validateAndParse();
-        error_log("Register:" . $request . implode(", ", $createAttributes));
-        $user = User::factory()->create($createAttributes);
-        Auth::login($user, true);
-        return $request->user();
+    // routes using jwt token
+    Route::middleware(['auth:jwt'])->group(function () {
+        Route::get('/verify', fn(Request $request) => $request->user());
     });
-
-    Route::post('/csrf', function () {
-        return csrf_token();
-    });
-
-    Route::post('/login', function (LoginRequest $request) {
-        $loginAttributes = $request->validateAndParse();
-        error_log("Login:" . $request . implode(", ", $loginAttributes));
-
-        if (!Auth::attempt($request->only('email', 'password'), true)) {
-            throw ValidationException::withMessages([
-                'email' => __('auth.failed'),
-            ]);
-        }
-
-        $request->session()->regenerate();
-
-        return $request->user();
-    });
-
-    Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
-        Auth::guard('web')->logout();
-
-        $request->session()->invalidate();
-
-        $request->session()->regenerateToken();
-        return response()->noContent();
-    });
-
 });
