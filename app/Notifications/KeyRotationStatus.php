@@ -35,7 +35,7 @@ class KeyRotationStatus extends Notification
      */
     public function via(): array
     {
-        return ['mail', 'database'];
+        return ['database'];
     }
 
     /**

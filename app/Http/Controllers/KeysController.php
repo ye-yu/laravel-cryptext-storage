@@ -26,7 +26,8 @@ class KeysController extends Controller
         return $user->getKeySlotsInfo();
     }
 
-    function rotateKey(RotateKeyRequest $request): JsonResponse
+    #[ArrayShape(["message" => "string"])]
+    function rotateKey(RotateKeyRequest $request): array
     {
         $user = Utils::user($request);
         $slots = $request->validatedSlotArrays();
@@ -34,8 +35,8 @@ class KeysController extends Controller
 
         KeyRotatorJob::dispatch($user, $unlockingKey, $slots);
 
-        return response()->json([
-
-        ]);
+        return [
+            "message" => "Job dispatched."
+        ];
     }
 }

@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\DatabaseNotification;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Notification;
 use JetBrains\PhpStorm\ArrayShape;
 use Laravel\Sanctum\HasApiTokens;
 use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
@@ -18,6 +20,7 @@ use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
  * @property int $id
  * @property-read Collection $keySlot;
  * @property-read Collection $secrets;
+ * @property-read DatabaseNotification $unreadNotifications;
 */
 class User extends Authenticatable implements JWTSubject
 {

@@ -37,7 +37,7 @@ class KeyRotatorJob implements ShouldQueue
             $this->newUnlockingKeyCandidate = strlen($slot) > 0 ? $slot : $this->newUnlockingKeyCandidate;
         }
 
-        if (strlen($this->newUnlockingKeyCandidate)) throw new Exception("Cannot find candidate key to decrypt master key!");
+        if (strlen($this->newUnlockingKeyCandidate) === 0) throw new Exception("Cannot find candidate key to decrypt master key!");
     }
 
     /**
@@ -47,8 +47,7 @@ class KeyRotatorJob implements ShouldQueue
      */
     public function handle(): void
     {
-        /** @noinspection PhpParamsInspection */
-        $notes = Secret::asSelfArray(Secret::where('user_id', $this->user->id)->get());
+        $notes = Secret::where('user_id', $this->user->id);
 
         try {
             $keySlot = KeySlot::createNewInstance($this->slots, $this->user);
@@ -61,7 +60,8 @@ class KeyRotatorJob implements ShouldQueue
         $failedEncryption = 0;
         $failedDecryption = 0;
 
-        foreach ($notes as $note) {
+        foreach ($notes as $_note) {
+            $note = Secret::asSelf($_note);
             try {
                 $note->rotateEncryption($this->unlockingKey, $this->newUnlockingKeyCandidate, $keySlot);
             } catch (DecryptionException $e) {
