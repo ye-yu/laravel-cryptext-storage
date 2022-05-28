@@ -75,7 +75,7 @@ class User extends Authenticatable implements JWTSubject
     public function userHasKeySlotInstance(): bool
     {
         try {
-            return count($this->keySlot->all()) > 0;
+            return $this->keySlot->count() > 0;
         } catch (ModelNotFoundException) {
             return false;
         }

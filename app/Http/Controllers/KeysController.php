@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Keys\CreateKeyRequest;
 use App\Http\Requests\Keys\RotateKeyRequest;
+use App\Http\Requests\Keys\ValidateKeyRequest;
 use App\Jobs\KeyRotatorJob;
 use App\Utils\Utils;
 use Exception;
@@ -24,6 +25,17 @@ class KeysController extends Controller
         $slots = $request->validatedSlotArrays();
         $user->createNewKey($slots);
         return $user->getKeySlotsInfo();
+    }
+
+    #[ArrayShape(["valid" => "bool"])]
+    function validateKey(ValidateKeyRequest $request): array
+    {
+        $user = Utils::user($request);
+        $keySlot = $user->getLatestKeySlot();
+        $valid = $keySlot->getMatchingKeySlot($request->validatedKey()) >= 0;
+        return [
+            "valid" => $valid
+        ];
     }
 
     #[ArrayShape(["message" => "string"])]

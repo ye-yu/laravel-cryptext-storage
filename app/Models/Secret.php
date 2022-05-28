@@ -12,6 +12,7 @@ use MiladRahimi\PhpCrypt\Exceptions\EncryptionException;
 
 /**
  * @property-read string $content
+ * @property-read int $key_id
  * @property-read Collection $keySlot
  * @property-read User $fileOwner
  * @method static Collection where(string $name, mixed $value)
@@ -23,7 +24,13 @@ class Secret extends Model
     use HasFactory;
 
     protected $hidden = [
-        "content"
+        "content",
+    ];
+
+    protected $fillable = [
+        "key_id",
+        "content",
+        "keySlot",
     ];
 
     public static function asSelf(mixed $any): Secret
@@ -44,7 +51,7 @@ class Secret extends Model
      * @throws DecryptionException
      */
     #[ArrayShape(["content" => "string"])]
-    public static function readNote(mixed $key, mixed $name, User $user): array
+    public static function readNote(string $key, mixed $name, User $user): array
     {
         return [
             "content" => Secret::asSelf(Secret::where('name', $name)
@@ -63,7 +70,12 @@ class Secret extends Model
     }
 
     public function getKeySlot(): KeySlot {
-        return $this->keySlot->firstOrFail();
+        $currentKeySlot = $this->keySlot->firstOrFail();
+        if ($currentKeySlot->id !== $this->key_id) {
+            // fuck you laravel for making this too many work
+            $currentKeySlot = KeySlot::where("id", $this->key_id)->firstOrFail();
+        }
+        return $currentKeySlot;
     }
 
     /**
@@ -79,13 +91,17 @@ class Secret extends Model
      * @throws DecryptionException
      * @throws EncryptionException
      */
-    public function rotateEncryption(string $unlockingKey, string $newUnlockingKey, KeySlot $newKeySlot) {
+    public function rotateEncryption(string $unlockingKey, string $newUnlockingKey, KeySlot $newKeySlot): bool
+    {
         $unlockedNote = $this->tryDecrypt($unlockingKey);
         $newEncrypted = $newKeySlot->encryptContent($newUnlockingKey, $unlockedNote);
-        $this->update([
+        $success = $this->update([
             "key_id" => $newKeySlot->id,
             "content" => $newEncrypted,
         ]);
+
+        $this->load('keySlot');
+        return $success;
     }
 
     /**

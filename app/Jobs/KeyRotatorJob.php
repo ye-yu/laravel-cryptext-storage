@@ -47,23 +47,28 @@ class KeyRotatorJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $notes = Secret::where('user_id', $this->user->id);
+        /** @noinspection PhpParamsInspection */
+        $notes = Secret::where('user_id', $this->user->id)->get()->all();
 
         try {
-            $keySlot = KeySlot::createNewInstance($this->slots, $this->user);
+            $keySlot = $this->user->createNewKey($this->slots);
         } catch (Exception $e) {
             ApplicationLog::new(Constants::$KeyRotator_UnableToCreateNewKey, "Error at KeyRotatorJob: " . $e, $this->user);
-            $this->user->notify(new KeyRotationStatus(false, time(), "New key slot failed to be initialised. Please escalate this to the administrator with the following report code: " . Constants::$KeyRotator_UnableToCreateNewKey));
+            $this->user->notify(new KeyRotationStatus(false, time(), 0, 0, "New key slot failed to be initialised. Please escalate this to the administrator with the following report code: " . Constants::$KeyRotator_UnableToCreateNewKey));
             return;
         }
 
         $failedEncryption = 0;
         $failedDecryption = 0;
+        $rotated = 0;
+        $total = 0;
 
         foreach ($notes as $_note) {
             $note = Secret::asSelf($_note);
+            $total += 1;
             try {
-                $note->rotateEncryption($this->unlockingKey, $this->newUnlockingKeyCandidate, $keySlot);
+                $success = $note->rotateEncryption($this->unlockingKey, $this->newUnlockingKeyCandidate, $keySlot);
+                $rotated += $success ? 1 : 0;
             } catch (DecryptionException $e) {
                 ApplicationLog::new(Constants::$KeyRotator_FailedDecryption, "Error at KeyRotatorJob: " . $e, $this->user);
                 $failedDecryption += 1;
@@ -74,13 +79,13 @@ class KeyRotatorJob implements ShouldQueue
         }
 
         if ($failedDecryption > 0 && $failedEncryption > 0) {
-            $this->user->notify(new KeyRotationStatus(false, time(), "Process during some decryption and encryption failed. Please escalate this to the administrator with the following report code: " . implode([Constants::$KeyRotator_FailedDecryption, Constants::$KeyRotator_FailedEncryption])));
+            $this->user->notify(new KeyRotationStatus(false, time(), $rotated, $total, "Process during some decryption and encryption failed. Please escalate this to the administrator with the following report code: " . implode([Constants::$KeyRotator_FailedDecryption, Constants::$KeyRotator_FailedEncryption])));
         } else if ($failedDecryption) {
-            $this->user->notify(new KeyRotationStatus(false, time(), "Process during some decryption failed. Please escalate this to the administrator with the following report code: " . implode([Constants::$KeyRotator_FailedDecryption])));
+            $this->user->notify(new KeyRotationStatus(false, time(), $rotated, $total, "Process during some decryption failed. Please escalate this to the administrator with the following report code: " . implode([Constants::$KeyRotator_FailedDecryption])));
         } else if ($failedEncryption) {
-            $this->user->notify(new KeyRotationStatus(false, time(), "Process during some encryption failed. Please escalate this to the administrator with the following report code: " . implode([Constants::$KeyRotator_FailedEncryption])));
+            $this->user->notify(new KeyRotationStatus(false, time(), $rotated, $total, "Process during some encryption failed. Please escalate this to the administrator with the following report code: " . implode([Constants::$KeyRotator_FailedEncryption])));
         } else {
-            $this->user->notify(new KeyRotationStatus(true, time()));
+            $this->user->notify(new KeyRotationStatus(true, time(), $rotated, $total));
         }
     }
 }

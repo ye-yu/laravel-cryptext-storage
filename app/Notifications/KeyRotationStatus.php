@@ -20,7 +20,7 @@ class KeyRotationStatus extends Notification
      *
      * @return void
      */
-    public function __construct(private bool $success, private int $timestamp, private ?string $failReason = null)
+    public function __construct(private bool $success, private int $timestamp, private int $rotated, private int $total,  private ?string $failReason = null)
     {
         $dateTime = new DateTime();
         $dateTime->setTimestamp($this->timestamp);
@@ -70,10 +70,14 @@ class KeyRotationStatus extends Notification
             return [
                 "success" => $this->success,
                 "timestamp" => $this->timestamp,
+                "rotated" => $this->rotated,
+                "total" => $this->total,
             ];
         return [
             "success" => $this->success,
             "timestamp" => $this->timestamp,
+            "rotated" => $this->rotated,
+            "total" => $this->total,
             "fail_reason" => $this->failReason,
         ];
     }

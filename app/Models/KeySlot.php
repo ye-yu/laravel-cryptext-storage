@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasTimestamps;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -32,6 +33,7 @@ use MiladRahimi\PhpCrypt\Symmetric;
  * @property-read string $key6
  * @property-read string $key7
  * @property-read int $id
+ * @method static Collection where(string $name, mixed $value)
  */
 class KeySlot extends Model
 {

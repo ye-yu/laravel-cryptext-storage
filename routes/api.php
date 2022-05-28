@@ -48,6 +48,7 @@ Route::prefix('/v1')->group(function () {
         Route::post('/notes/{name}', [SecretController::class, 'readNote']);
         Route::get('/keys', fn(Request $request) => Utils::user($request)->getKeySlotsInfo());
         Route::put('/keys', [KeysController::class, 'createKey']);
+        Route::post('/keys/validate', [KeysController::class, 'validateKey']);
         Route::post('/keys/rotate', [KeysController::class, 'rotateKey']);
     });
 });
