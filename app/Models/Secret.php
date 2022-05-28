@@ -32,6 +32,15 @@ class Secret extends Model
     }
 
     /**
+     * @param mixed $any
+     * @return Secret[]
+     */
+    public static function asSelfArray(mixed $any): array
+    {
+        return $any;
+    }
+
+    /**
      * @throws DecryptionException
      */
     #[ArrayShape(["content" => "string"])]
@@ -64,6 +73,19 @@ class Secret extends Model
     {
         $keySlot = $this->getKeySlot();
         return $keySlot->decryptContent($key, $this->content);
+    }
+
+    /**
+     * @throws DecryptionException
+     * @throws EncryptionException
+     */
+    public function rotateEncryption(string $unlockingKey, string $newUnlockingKey, KeySlot $newKeySlot) {
+        $unlockedNote = $this->tryDecrypt($unlockingKey);
+        $newEncrypted = $newKeySlot->encryptContent($newUnlockingKey, $unlockedNote);
+        $this->update([
+            "key_id" => $newKeySlot->id,
+            "content" => $newEncrypted,
+        ]);
     }
 
     /**

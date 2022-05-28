@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Keys\CreateKeyRequest;
+use App\Http\Requests\Keys\RotateKeyRequest;
+use App\Jobs\KeyRotatorJob;
 use App\Utils\Utils;
 use Exception;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use JetBrains\PhpStorm\ArrayShape;
 
@@ -21,5 +24,18 @@ class KeysController extends Controller
         $slots = $request->validatedSlotArrays();
         $user->createNewKey($slots);
         return $user->getKeySlotsInfo();
+    }
+
+    function rotateKey(RotateKeyRequest $request): JsonResponse
+    {
+        $user = Utils::user($request);
+        $slots = $request->validatedSlotArrays();
+        $unlockingKey = $request->validatedUnlockingKey();
+
+        KeyRotatorJob::dispatch($user, $unlockingKey, $slots);
+
+        return response()->json([
+
+        ]);
     }
 }
