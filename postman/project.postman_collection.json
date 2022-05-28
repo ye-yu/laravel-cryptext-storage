@@ -1,0 +1,548 @@
+{
+	"info": {
+		"_postman_id": "9e7c9547-1d83-48c1-a771-44ab92e3fe29",
+		"name": "Laravel - SS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Session Auth",
+			"item": [
+				{
+					"name": "Get CSRF Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.globals.set(\"csrf_token\", pm.response.text());",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.globals.unset(\"csrf_token\");",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-url}}/api/v1/csrf",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"csrf"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "rafolwen98@gmail.com",
+									"type": "default"
+								},
+								{
+									"key": "password",
+									"value": "abc123",
+									"type": "default"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api-url}}/api/v1/login",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-url}}/api/v1/user",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{api-url}}/api/v1/logout",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate new JWT",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.globals.set(\"jwt\", pm.response.json().access_token);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"expires_in\": 86400\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-url}}/api/v1/jwt",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"jwt"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Notifications",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-url}}/api/v1/notifications/fetch/:pageSize?page=2",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"notifications",
+								"fetch",
+								":pageSize"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2"
+								}
+							],
+							"variable": [
+								{
+									"key": "pageSize",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Read All Notifications",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-url}}/api/v1/notifications/read/all",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"notifications",
+								"read",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Read First N Notifications",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-url}}/api/v1/notifications/read/:pageSize",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"notifications",
+								"read",
+								":pageSize"
+							],
+							"variable": [
+								{
+									"key": "pageSize",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.request.headers.append({",
+							"    key: \"Referer\",",
+							"    value: \"localhost\",",
+							"});",
+							"pm.request.headers.append({",
+							"    key: \"Accept\",",
+							"    value: \"application/json\",",
+							"});",
+							"",
+							"if (pm.globals.get(\"csrf_token\").length > 0) {",
+							"    pm.request.headers.append({",
+							"        key: \"X-CSRF-Token\",",
+							"        value: pm.globals.get(\"csrf_token\"),",
+							"    });",
+							"}",
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "JWT Session",
+			"item": [
+				{
+					"name": "Verify",
+					"protocolProfileBehavior": {
+						"disableCookies": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-url}}/api/v1/verify",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"verify"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "All Encrypted Notes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-url}}/api/v1/notes",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"notes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create New Note",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"key\": \"Ghfjdddkkk!1\",\n    \"name\": \"hello\",\n    \"content\": \"this is an encrypted content\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-url}}/api/v1/notes",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"notes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get note by name",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"key\": \"abcdef123123\",\n    \"name\": \"hello\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-url}}/api/v1/notes/:name?XDEBUG_SESSION_START=19496",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"notes",
+								":name"
+							],
+							"query": [
+								{
+									"key": "XDEBUG_SESSION_START",
+									"value": "19496"
+								}
+							],
+							"variable": [
+								{
+									"key": "name",
+									"value": "hello"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Key Slot Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api-url}}/api/v1/keys",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"keys"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create New Key",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"slots\": [\n        \"abcdef123123\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-url}}/api/v1/keys",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"keys"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validate Key",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"key\": \"Ghfjdddkkk!1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-url}}/api/v1/keys/validate",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"keys",
+								"validate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Rotate key",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"unlocking_key\": \"Ghfjdddkkk!1\",\n    \"slots\": [\n        \"abcdef123123\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{api-url}}/api/v1/keys/rotate",
+							"host": [
+								"{{api-url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"keys",
+								"rotate"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{jwt}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.request.headers.append({",
+							"    key: \"Referer\",",
+							"    value: \"localhost\",",
+							"});",
+							"pm.request.headers.append({",
+							"    key: \"Accept\",",
+							"    value: \"application/json\",",
+							"});"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	]
+}
